@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Catatan Kuliah</title>
+  <meta name="description" content="Simpan semua materi kuliah, pelajari ulang, dan ubah jadi kuis.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📚</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <button class="icon-btn menu-btn" id="menuBtn" aria-label="Buka menu">☰</button>
+    <a href="index.html" class="brand" title="Ke halaman depan">📚 Catatan Kuliah</a>
+    <form class="search" id="searchForm" role="search">
+      <input type="search" id="searchInput" placeholder="Cari materi…" aria-label="Cari materi">
+    </form>
+  </header>
+
+  <div class="layout">
+    <aside class="sidebar" id="sidebar">
+      <nav>
+        <a href="#/" data-nav="home">🏠 Beranda</a>
+        <a href="#/kuis" data-nav="kuis">📝 Kuis &amp; Flashcard</a>
+        <a href="#/pengaturan" data-nav="pengaturan">⚙️ Backup &amp; Pengaturan</a>
+      </nav>
+      <div class="side-head">
+        <span>Mata Kuliah</span>
+        <button class="btn small" id="addCourseBtn">+ Tambah</button>
+      </div>
+      <div id="courseList"></div>
+    </aside>
+    <main id="app" tabindex="-1"></main>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <script src="app.js"></script>
+</body>
+</html>

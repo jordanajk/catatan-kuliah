@@ -3,37 +3,683 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Catatan Kuliah</title>
-  <meta name="description" content="Simpan semua materi kuliah, pelajari ulang, dan ubah jadi kuis.">
+  <title>Catatan Kuliah — Catat sekali, kuasai sampai ujian</title>
+  <meta name="description" content="Simpan semua materi kuliah dari semester 1 sampai lulus. Catatanmu otomatis jadi kuis dan flashcard untuk belajar ulang menjelang UTS dan UAS. Gratis, tanpa akun.">
+  <meta property="og:title" content="Catatan Kuliah — Catat sekali, kuasai sampai ujian">
+  <meta property="og:description" content="Simpan materi kuliah, belajar ulang, dan ubah catatan jadi kuis otomatis. Gratis, tanpa akun.">
+  <meta property="og:image" content="assets/dashboard.jpg">
+  <meta property="og:type" content="website">
+  <meta name="theme-color" content="#2f6f5e">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📚</text></svg>">
-  <link rel="stylesheet" href="styles.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap">
+  <style>
+    :root {
+      --bg: #f6f5f1;
+      --bg-alt: #efede6;
+      --surface: #ffffff;
+      --text: #1b1a17;
+      --muted: #625d54;
+      --border: #dfdbd1;
+      --accent: #2f6f5e;
+      --accent-strong: #245a4c;
+      --accent-soft: #dcebe5;
+      --accent-text: #ffffff;
+      --good: #2e7d4f;
+      --good-soft: #def2e5;
+      --bad: #b23b3b;
+      --bad-soft: #f8e1e1;
+      --mark: #fde68a;
+      --dark: #14302a;
+      --dark-text: #e9f2ee;
+      --shadow-lg: 0 24px 60px -20px rgba(20, 48, 42, .28), 0 8px 20px -8px rgba(0,0,0,.08);
+      --shadow: 0 1px 2px rgba(0,0,0,.04), 0 4px 14px rgba(0,0,0,.05);
+      color-scheme: light;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme="light"]) {
+        --bg: #121311; --bg-alt: #191a17; --surface: #1e1f1c; --text: #ece9e2; --muted: #a39e93;
+        --border: #34332e; --accent: #6cc3a8; --accent-strong: #84d3ba; --accent-soft: #1d3730; --accent-text: #0d1c17;
+        --good: #6fcf97; --good-soft: #1d3326; --bad: #f08a8a; --bad-soft: #3a2222; --mark: #6b5a17;
+        --dark: #0d1f1b; --dark-text: #e9f2ee;
+        --shadow-lg: 0 24px 60px -20px rgba(0,0,0,.6); --shadow: none;
+        color-scheme: dark;
+      }
+    }
+    :root[data-theme="dark"] {
+      --bg: #121311; --bg-alt: #191a17; --surface: #1e1f1c; --text: #ece9e2; --muted: #a39e93;
+      --border: #34332e; --accent: #6cc3a8; --accent-strong: #84d3ba; --accent-soft: #1d3730; --accent-text: #0d1c17;
+      --good: #6fcf97; --good-soft: #1d3326; --bad: #f08a8a; --bad-soft: #3a2222; --mark: #6b5a17;
+      --dark: #0d1f1b; --dark-text: #e9f2ee; --shadow-lg: 0 24px 60px -20px rgba(0,0,0,.6); --shadow: none;
+      color-scheme: dark;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } * { transition: none !important; animation: none !important; } }
+    body {
+      margin: 0; background: var(--bg); color: var(--text);
+      font: 17px/1.65 "Plus Jakarta Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+    img { max-width: 100%; height: auto; display: block; }
+    a { color: inherit; }
+    .wrap { width: min(1160px, 100% - 32px); margin-inline: auto; }
+    .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex; align-items: center; gap: 8px; justify-content: center;
+      padding: 13px 22px; border-radius: 12px; font-weight: 700; font-size: 1rem;
+      text-decoration: none; border: 1px solid transparent; transition: transform .15s, background .15s, border-color .15s;
+      white-space: nowrap;
+    }
+    .btn svg { width: 18px; height: 18px; }
+    .btn-primary { background: var(--accent); color: var(--accent-text); box-shadow: 0 6px 18px -6px color-mix(in srgb, var(--accent) 60%, transparent); }
+    .btn-primary:hover { background: var(--accent-strong); transform: translateY(-1px); }
+    .btn-ghost { border-color: var(--border); background: var(--surface); color: var(--text); }
+    .btn-ghost:hover { border-color: var(--accent); }
+    .btn-sm { padding: 9px 16px; font-size: .92rem; border-radius: 10px; }
+    :focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; border-radius: 6px; }
+
+    /* Nav */
+    .nav {
+      position: sticky; top: 0; z-index: 30;
+      background: color-mix(in srgb, var(--bg) 82%, transparent);
+      backdrop-filter: saturate(1.4) blur(12px); -webkit-backdrop-filter: saturate(1.4) blur(12px);
+      border-bottom: 1px solid transparent; transition: border-color .2s;
+    }
+    .nav.scrolled { border-bottom-color: var(--border); }
+    .nav .wrap { display: flex; align-items: center; gap: 24px; height: 68px; }
+    .logo { display: flex; align-items: center; gap: 10px; font-weight: 800; text-decoration: none; font-size: 1.08rem; letter-spacing: -.01em; }
+    .logo-mark { width: 34px; height: 34px; border-radius: 10px; background: var(--accent); color: var(--accent-text); display: grid; place-items: center; }
+    .logo-mark svg { width: 20px; height: 20px; }
+    .nav-links { display: flex; gap: 28px; margin-left: auto; }
+    .nav-links a { text-decoration: none; color: var(--muted); font-weight: 500; font-size: .95rem; }
+    .nav-links a:hover { color: var(--text); }
+    @media (max-width: 760px) { .nav-links { display: none; } .nav .btn { margin-left: auto; } }
+
+    /* Hero */
+    .hero { position: relative; padding: 72px 0 40px; overflow: hidden; }
+    .hero::before {
+      content: ""; position: absolute; inset: -20% -10% auto; height: 760px; z-index: -1;
+      background:
+        radial-gradient(ellipse 55% 50% at 50% 0%, color-mix(in srgb, var(--accent) 16%, transparent), transparent 70%),
+        linear-gradient(var(--border) 1px, transparent 1px) 0 0 / 44px 44px,
+        linear-gradient(90deg, var(--border) 1px, transparent 1px) 0 0 / 44px 44px;
+      mask-image: radial-gradient(ellipse 70% 60% at 50% 20%, #000 30%, transparent 75%);
+      -webkit-mask-image: radial-gradient(ellipse 70% 60% at 50% 20%, #000 30%, transparent 75%);
+      opacity: .7;
+    }
+    .hero-copy { text-align: center; max-width: 820px; margin-inline: auto; }
+    .eyebrow {
+      display: inline-flex; align-items: center; gap: 8px; padding: 6px 14px 6px 8px; border-radius: 99px;
+      background: var(--surface); border: 1px solid var(--border); font-size: .85rem; font-weight: 600; color: var(--muted);
+      box-shadow: var(--shadow);
+    }
+    .eyebrow .tag { background: var(--accent-soft); color: var(--accent); border-radius: 99px; padding: 2px 10px; font-weight: 700; }
+    h1 {
+      font-size: clamp(2.4rem, 6vw, 4.3rem); line-height: 1.05; letter-spacing: -.035em; font-weight: 800;
+      margin: 22px 0 20px; text-wrap: balance;
+    }
+    h1 .hl { color: var(--accent); position: relative; white-space: nowrap; }
+    h1 .hl::after {
+      content: ""; position: absolute; left: 0; right: 0; bottom: .02em; height: .14em; border-radius: 99px;
+      background: color-mix(in srgb, var(--accent) 28%, transparent); z-index: -1;
+    }
+    .lead { font-size: clamp(1.05rem, 2vw, 1.22rem); color: var(--muted); max-width: 640px; margin: 0 auto; text-wrap: pretty; }
+    .cta-row { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-top: 32px; }
+    .checks { display: flex; gap: 8px 24px; justify-content: center; flex-wrap: wrap; margin: 26px 0 0; padding: 0; list-style: none; color: var(--muted); font-size: .92rem; font-weight: 500; }
+    .checks li { display: flex; align-items: center; gap: 7px; }
+    .checks svg { width: 17px; height: 17px; color: var(--accent); flex-shrink: 0; }
+
+    /* Product shot */
+    .shot { position: relative; margin: 60px auto 0; max-width: 1060px; }
+    .browser {
+      border-radius: 16px; overflow: hidden; background: var(--surface); border: 1px solid var(--border);
+      box-shadow: var(--shadow-lg);
+    }
+    .browser-bar { display: flex; align-items: center; gap: 8px; padding: 12px 16px; border-bottom: 1px solid var(--border); background: var(--bg-alt); }
+    .browser-bar i { width: 11px; height: 11px; border-radius: 50%; background: var(--border); display: block; }
+    .browser-bar .url { margin-left: 14px; flex: 1; max-width: 360px; height: 26px; border-radius: 7px; background: var(--surface); border: 1px solid var(--border); font-size: .75rem; color: var(--muted); display: flex; align-items: center; padding: 0 10px; overflow: hidden; white-space: nowrap; }
+    .phone {
+      position: absolute; right: -28px; bottom: -40px; width: 230px; border-radius: 34px; padding: 9px;
+      background: #1b1a17; box-shadow: var(--shadow-lg);
+    }
+    .phone img { border-radius: 26px; aspect-ratio: 390 / 660; object-fit: cover; object-position: top; }
+    .float-card {
+      position: absolute; left: -36px; top: 38%; background: var(--surface); border: 1px solid var(--border);
+      border-radius: 14px; padding: 14px 16px; box-shadow: var(--shadow-lg); width: 250px; font-size: .88rem;
+    }
+    .float-card .k { font-size: .72rem; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); font-weight: 700; }
+    .float-card .v { font-weight: 700; margin-top: 2px; }
+    .float-card .ok { display: flex; align-items: center; gap: 8px; margin-top: 10px; padding: 8px 10px; border-radius: 8px; background: var(--good-soft); color: var(--good); font-weight: 700; }
+    .float-card .ok svg { width: 16px; height: 16px; }
+    @media (max-width: 1100px) { .float-card { left: 12px; top: auto; bottom: -30px; } .phone { right: 12px; } }
+    @media (max-width: 760px) {
+      .phone { width: 128px; border-radius: 22px; padding: 5px; bottom: -28px; right: 8px; }
+      .phone img { border-radius: 18px; }
+      .float-card { display: none; }
+      .browser-bar .url { display: none; }
+    }
+
+    /* Sections */
+    section { padding: 104px 0; }
+    @media (max-width: 760px) { section { padding: 72px 0; } .hero { padding-top: 48px; } }
+    .section-head { max-width: 680px; margin: 0 auto 56px; text-align: center; }
+    .kicker { color: var(--accent); font-weight: 700; font-size: .85rem; text-transform: uppercase; letter-spacing: .1em; }
+    h2 { font-size: clamp(1.9rem, 4vw, 2.75rem); line-height: 1.12; letter-spacing: -.03em; margin: 10px 0 14px; font-weight: 800; text-wrap: balance; }
+    .section-head p { color: var(--muted); margin: 0; font-size: 1.08rem; text-wrap: pretty; }
+    .alt { background: var(--bg-alt); border-block: 1px solid var(--border); }
+
+    /* Stats strip */
+    .strip { padding: 96px 0 0; }
+    .strip-grid { display: grid; grid-template-columns: repeat(4, 1fr); border: 1px solid var(--border); border-radius: 18px; background: var(--surface); overflow: hidden; }
+    .strip-grid > div { padding: 26px 24px; border-left: 1px solid var(--border); }
+    .strip-grid > div:first-child { border-left: 0; }
+    .strip-grid b { display: block; font-size: 1.9rem; letter-spacing: -.03em; line-height: 1.1; }
+    .strip-grid span { color: var(--muted); font-size: .92rem; }
+    @media (max-width: 760px) {
+      .strip { padding-top: 72px; }
+      .strip-grid { grid-template-columns: 1fr 1fr; }
+      .strip-grid > div:nth-child(3) { border-left: 0; }
+      .strip-grid > div:nth-child(n+3) { border-top: 1px solid var(--border); }
+    }
+
+    /* Features */
+    .features { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+    @media (max-width: 960px) { .features { grid-template-columns: 1fr 1fr; } }
+    @media (max-width: 620px) { .features { grid-template-columns: 1fr; } }
+    .feature {
+      background: var(--surface); border: 1px solid var(--border); border-radius: 18px; padding: 28px;
+      transition: transform .2s, border-color .2s, box-shadow .2s;
+    }
+    .feature:hover { transform: translateY(-3px); border-color: color-mix(in srgb, var(--accent) 45%, var(--border)); box-shadow: var(--shadow); }
+    .icon { width: 46px; height: 46px; border-radius: 12px; background: var(--accent-soft); color: var(--accent); display: grid; place-items: center; margin-bottom: 18px; }
+    .icon svg { width: 23px; height: 23px; }
+    .feature h3 { margin: 0 0 8px; font-size: 1.12rem; letter-spacing: -.01em; }
+    .feature p { margin: 0; color: var(--muted); font-size: .97rem; }
+
+    /* How it works + demo */
+    .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-bottom: 40px; counter-reset: s; }
+    @media (max-width: 860px) { .steps { grid-template-columns: 1fr; } }
+    .step { display: flex; gap: 16px; align-items: flex-start; }
+    .step::before {
+      counter-increment: s; content: counter(s); flex-shrink: 0; width: 36px; height: 36px; border-radius: 50%;
+      background: var(--accent); color: var(--accent-text); font-weight: 800; display: grid; place-items: center;
+    }
+    .step h3 { margin: 4px 0 4px; font-size: 1.05rem; }
+    .step p { margin: 0; color: var(--muted); font-size: .95rem; }
+    .step code, .demo code { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: .86em; background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 5px; }
+
+    .demo {
+      display: grid; grid-template-columns: 1fr 1fr; border: 1px solid var(--border); border-radius: 20px; overflow: hidden;
+      background: var(--surface); box-shadow: var(--shadow-lg);
+    }
+    @media (max-width: 860px) { .demo { grid-template-columns: 1fr; } }
+    .demo-pane { padding: 24px; min-width: 0; display: flex; flex-direction: column; }
+    .demo-pane textarea { flex: 1; }
+    .demo-pane + .demo-pane { border-left: 1px solid var(--border); background: var(--bg-alt); }
+    @media (max-width: 860px) { .demo-pane + .demo-pane { border-left: 0; border-top: 1px solid var(--border); } }
+    .demo-label { display: flex; align-items: center; justify-content: space-between; gap: 8px; font-size: .8rem; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); margin-bottom: 12px; }
+    .live { display: inline-flex; align-items: center; gap: 6px; color: var(--accent); text-transform: none; letter-spacing: 0; }
+    .live::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--accent); animation: pulse 1.6s infinite; }
+    @keyframes pulse { 50% { opacity: .3; } }
+    .demo textarea {
+      width: 100%; min-height: 290px; resize: vertical; border: 1px solid var(--border); border-radius: 12px; padding: 14px;
+      font: .92rem/1.7 ui-monospace, "SF Mono", Menlo, Consolas, monospace; background: var(--bg); color: var(--text);
+    }
+    .demo textarea:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
+    .qcards { display: flex; flex-direction: column; gap: 10px; }
+    .qcard { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 14px 16px; animation: pop .25s ease; }
+    @keyframes pop { from { opacity: 0; transform: translateY(4px); } }
+    .qcard .type { font-size: .72rem; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--accent); }
+    .qcard .q { font-weight: 600; margin: 4px 0 8px; font-size: .95rem; }
+    .qcard .opts { display: grid; gap: 6px; }
+    .qcard .opt { font-size: .86rem; padding: 6px 10px; border: 1px solid var(--border); border-radius: 8px; color: var(--muted); }
+    .qcard .opt.right { border-color: var(--good); background: var(--good-soft); color: var(--good); font-weight: 600; }
+    .qcard .blank { display: inline-block; min-width: 70px; border-bottom: 2px solid var(--accent); }
+    .qcard .ans { font-size: .86rem; color: var(--good); font-weight: 600; }
+    .demo-count { font-size: .85rem; color: var(--muted); margin-top: 12px; }
+
+    /* Showcase rows */
+    .row2 { display: grid; grid-template-columns: 1fr 1.15fr; gap: 64px; align-items: center; }
+    .row2 + .row2 { margin-top: 104px; }
+    .row2.flip > :first-child { order: 2; }
+    @media (max-width: 900px) { .row2 { grid-template-columns: 1fr; gap: 32px; } .row2.flip > :first-child { order: 0; } .row2 + .row2 { margin-top: 72px; } }
+    .row2 h2 { text-align: left; }
+    .row2 p { color: var(--muted); }
+    .bullets { list-style: none; padding: 0; margin: 22px 0 0; display: grid; gap: 12px; }
+    .bullets li { display: flex; gap: 12px; align-items: flex-start; }
+    .bullets svg { width: 20px; height: 20px; color: var(--accent); flex-shrink: 0; margin-top: 4px; }
+    .frame { border-radius: 16px; overflow: hidden; border: 1px solid var(--border); box-shadow: var(--shadow-lg); background: var(--surface); }
+
+    /* Leitner */
+    .boxes { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-top: 8px; }
+    .box { border: 1px solid var(--border); border-radius: 14px; background: var(--surface); padding: 14px 10px 12px; text-align: center; }
+    .box .n { font-size: .75rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; }
+    .box .cards { display: flex; flex-direction: column-reverse; align-items: center; gap: 4px; height: 92px; justify-content: flex-start; margin: 10px 0; }
+    .box .cards i { width: 70%; height: 12px; border-radius: 4px; display: block; background: color-mix(in srgb, var(--accent) var(--a), var(--bg-alt)); }
+    .box .f { font-size: .78rem; color: var(--muted); line-height: 1.35; }
+    .row2 > * { min-width: 0; }
+    @media (max-width: 520px) {
+      .boxes { gap: 6px; }
+      .box { padding: 10px 4px; border-radius: 10px; }
+      .box .n { font-size: .62rem; letter-spacing: .02em; }
+      .box .f { font-size: .68rem; }
+    }
+    .legend { display: flex; justify-content: space-between; font-size: .85rem; color: var(--muted); margin-top: 12px; font-weight: 600; }
+
+    /* Privacy */
+    .privacy { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+    @media (max-width: 860px) { .privacy { grid-template-columns: 1fr; } }
+    .privacy .feature { background: transparent; }
+
+    /* FAQ */
+    .faq { max-width: 780px; margin: 0 auto; }
+    .faq details { border-bottom: 1px solid var(--border); }
+    .faq summary {
+      list-style: none; cursor: pointer; padding: 22px 0; font-weight: 700; font-size: 1.08rem;
+      display: flex; justify-content: space-between; gap: 16px; align-items: center;
+    }
+    .faq summary::-webkit-details-marker { display: none; }
+    .faq summary::after { content: "+"; font-size: 1.5rem; font-weight: 400; color: var(--accent); transition: transform .2s; flex-shrink: 0; }
+    .faq details[open] summary::after { transform: rotate(45deg); }
+    .faq details p { margin: 0 0 22px; color: var(--muted); }
+
+    /* Final CTA */
+    .final { padding: 104px 0; }
+    @media (max-width: 760px) { .final { padding: 72px 0; } .final-card { padding: 56px 20px; border-radius: 22px; } }
+    .final-card {
+      position: relative; overflow: hidden; border-radius: 28px; padding: 72px 32px; text-align: center;
+      background: var(--dark); color: var(--dark-text);
+    }
+    .final-card::before {
+      content: ""; position: absolute; inset: 0;
+      background: radial-gradient(ellipse 60% 80% at 50% 120%, rgba(108, 195, 168, .35), transparent 70%),
+        linear-gradient(rgba(255,255,255,.05) 1px, transparent 1px) 0 0 / 40px 40px,
+        linear-gradient(90deg, rgba(255,255,255,.05) 1px, transparent 1px) 0 0 / 40px 40px;
+    }
+    .final-card > * { position: relative; }
+    .final-card h2 { color: #fff; margin-top: 0; }
+    .final-card p { color: rgba(233, 242, 238, .78); max-width: 560px; margin: 0 auto 30px; font-size: 1.1rem; }
+    .final-card .btn-primary { background: #6cc3a8; color: #0d1c17; }
+    .final-card .btn-primary:hover { background: #84d3ba; }
+
+    footer { border-top: 1px solid var(--border); padding: 32px 0; color: var(--muted); font-size: .9rem; }
+    footer .wrap { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; align-items: center; }
+    footer nav { display: flex; gap: 22px; flex-wrap: wrap; }
+    footer a { text-decoration: none; }
+    footer a:hover { color: var(--text); }
+
+    .reveal { opacity: 0; transform: translateY(16px); transition: opacity .6s ease, transform .6s ease; }
+    .reveal.in { opacity: 1; transform: none; }
+    .no-js .reveal { opacity: 1; transform: none; }
+  </style>
 </head>
-<body>
-  <header class="topbar">
-    <button class="icon-btn menu-btn" id="menuBtn" aria-label="Buka menu">☰</button>
-    <a href="#/" class="brand">📚 Catatan Kuliah</a>
-    <form class="search" id="searchForm" role="search">
-      <input type="search" id="searchInput" placeholder="Cari materi…" aria-label="Cari materi">
-    </form>
+<body class="no-js">
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <defs>
+      <symbol id="i-book" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/><path d="M9 7h6"/></symbol>
+      <symbol id="i-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></symbol>
+      <symbol id="i-check-circle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m8 12 3 3 5-6"/></symbol>
+      <symbol id="i-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></symbol>
+      <symbol id="i-folder" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.7-.9l-.8-1.2A2 2 0 0 0 7.9 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></symbol>
+      <symbol id="i-spark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 5.8L20 10.5l-6.1 1.8L12 18l-1.9-5.7L4 10.5l6.1-1.7z"/><path d="M19 17v4M17 19h4"/></symbol>
+      <symbol id="i-list" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 6 2 2 4-4"/><path d="m3 17 2 2 4-4"/><path d="M13 6h8"/><path d="M13 12h8"/><path d="M13 18h8"/></symbol>
+      <symbol id="i-layers" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 2 10 5-10 5L2 7z"/><path d="m2 17 10 5 10-5"/><path d="m2 12 10 5 10-5"/></symbol>
+      <symbol id="i-target" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></symbol>
+      <symbol id="i-search" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></symbol>
+      <symbol id="i-shield" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></symbol>
+      <symbol id="i-download" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/><path d="M12 15V3"/></symbol>
+      <symbol id="i-phone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2"/><path d="M12 18h.01"/></symbol>
+      <symbol id="i-user" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21v-1a7 7 0 0 1 11-5.7"/><path d="m17 17 4 4m0-4-4 4"/></symbol>
+      <symbol id="i-chart" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m7 15 4-4 3 3 6-6"/></symbol>
+    </defs>
+  </svg>
+
+  <header class="nav" id="nav">
+    <div class="wrap">
+      <a class="logo" href="#top" aria-label="Catatan Kuliah, ke atas">
+        <span class="logo-mark"><svg><use href="#i-book"/></svg></span> Catatan Kuliah
+      </a>
+      <nav class="nav-links" aria-label="Navigasi">
+        <a href="#fitur">Fitur</a>
+        <a href="#cara-kerja">Cara kerja</a>
+        <a href="#privasi">Privasi</a>
+        <a href="#faq">FAQ</a>
+      </nav>
+      <a class="btn btn-primary btn-sm" href="app.html">Buka aplikasi</a>
+    </div>
   </header>
 
-  <div class="layout">
-    <aside class="sidebar" id="sidebar">
-      <nav>
-        <a href="#/" data-nav="home">🏠 Beranda</a>
-        <a href="#/kuis" data-nav="kuis">📝 Kuis &amp; Flashcard</a>
-        <a href="#/pengaturan" data-nav="pengaturan">⚙️ Backup &amp; Pengaturan</a>
-      </nav>
-      <div class="side-head">
-        <span>Mata Kuliah</span>
-        <button class="btn small" id="addCourseBtn">+ Tambah</button>
-      </div>
-      <div id="courseList"></div>
-    </aside>
-    <main id="app" tabindex="-1"></main>
-  </div>
+  <main id="top">
+    <!-- Hero -->
+    <section class="hero">
+      <div class="wrap">
+        <div class="hero-copy">
+          <span class="eyebrow"><span class="tag">Gratis</span> Untuk mahasiswa, dari semester 1 sampai wisuda</span>
+          <h1>Catat sekali,<br><span class="hl">kuasai</span> sampai ujian.</h1>
+          <p class="lead">Simpan semua materi kuliah di satu tempat. Catatanmu otomatis berubah jadi kuis dan flashcard, jadi belajar ulang menjelang UTS dan UAS tinggal klik.</p>
+          <div class="cta-row">
+            <a class="btn btn-primary" href="app.html">Mulai belajar sekarang <svg><use href="#i-arrow"/></svg></a>
+            <a class="btn btn-ghost" href="#cara-kerja">Lihat cara kerjanya</a>
+          </div>
+          <ul class="checks">
+            <li><svg><use href="#i-check"/></svg> Tanpa daftar akun</li>
+            <li><svg><use href="#i-check"/></svg> Data tersimpan di perangkatmu</li>
+            <li><svg><use href="#i-check"/></svg> Nyaman dipakai di HP</li>
+          </ul>
+        </div>
 
-  <div class="toast" id="toast" role="status" aria-live="polite"></div>
-  <script src="app.js"></script>
+        <div class="shot reveal">
+          <div class="browser">
+            <div class="browser-bar"><i></i><i></i><i></i><span class="url">jordanajk.github.io/catatan-kuliah</span></div>
+            <img src="assets/dashboard.jpg" width="2560" height="1600" alt="Beranda Catatan Kuliah: daftar mata kuliah per semester, statistik catatan dan skor kuis, serta materi yang perlu diulang">
+          </div>
+          <div class="float-card" aria-hidden="true">
+            <div class="k">Soal isian · Basis Data</div>
+            <div class="v">Kolom yang merujuk ke primary key tabel lain disebut _____</div>
+            <div class="ok"><svg><use href="#i-check-circle"/></svg> foreign key — Benar!</div>
+          </div>
+          <div class="phone"><img src="assets/flashcard-hp.jpg" width="780" height="1688" alt="Mode flashcard di HP" loading="lazy"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Strip -->
+    <div class="strip">
+      <div class="wrap">
+        <div class="strip-grid reveal">
+          <div><b>3</b><span>jenis soal: pilihan ganda, benar/salah, isian</span></div>
+          <div><b>2</b><span>mode belajar: kuis & flashcard</span></div>
+          <div><b>0</b><span>detik untuk daftar, langsung pakai</span></div>
+          <div><b>Rp0</b><span>gratis selamanya, tanpa iklan</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Features -->
+    <section id="fitur">
+      <div class="wrap">
+        <div class="section-head reveal">
+          <div class="kicker">Fitur</div>
+          <h2>Semua yang kamu butuhkan untuk belajar ulang</h2>
+          <p>Dari mencatat di kelas sampai latihan soal semalam sebelum ujian, semuanya di satu aplikasi yang ringan.</p>
+        </div>
+        <div class="features">
+          <article class="feature reveal">
+            <div class="icon"><svg><use href="#i-folder"/></svg></div>
+            <h3>Rapi per mata kuliah & semester</h3>
+            <p>Setiap catatan masuk ke mata kuliahnya dan dikelompokkan per semester. Materi semester lalu tetap mudah dicari.</p>
+          </article>
+          <article class="feature reveal">
+            <div class="icon"><svg><use href="#i-spark"/></svg></div>
+            <h3>Catatan jadi kuis otomatis</h3>
+            <p>Tebalkan istilah penting atau tulis <b>Istilah :: Definisi</b>, lalu soal pilihan ganda dan isian langsung tersedia.</p>
+          </article>
+          <article class="feature reveal">
+            <div class="icon"><svg><use href="#i-list"/></svg></div>
+            <h3>Bikin soal sendiri</h3>
+            <p>Tambahkan soal pilihan ganda, benar/salah, atau isian lengkap dengan pembahasan, misalnya dari kisi-kisi dosen.</p>
+          </article>
+          <article class="feature reveal">
+            <div class="icon"><svg><use href="#i-layers"/></svg></div>
+            <h3>Flashcard untuk hafalan</h3>
+            <p>Lihat pertanyaan, coba ingat, buka jawaban, lalu nilai dirimu sendiri. Cocok untuk istilah dan definisi.</p>
+          </article>
+          <article class="feature reveal">
+            <div class="icon"><svg><use href="#i-target"/></svg></div>
+            <h3>Fokus ke yang belum dikuasai</h3>
+            <p>Soal yang sering salah muncul lebih dulu, dan ada tombol khusus untuk mengulang semua jawaban yang keliru.</p>
+          </article>
+          <article class="feature reveal">
+            <div class="icon"><svg><use href="#i-chart"/></svg></div>
+            <h3>Pantau perkembanganmu</h3>
+            <p>Lihat rata-rata skor, riwayat kuis, dan daftar materi yang perlu diulang langsung dari beranda.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- How it works -->
+    <section id="cara-kerja" class="alt">
+      <div class="wrap">
+        <div class="section-head reveal">
+          <div class="kicker">Cara kerja</div>
+          <h2>Tulis seperti biasa, kuisnya menyusul sendiri</h2>
+          <p>Tidak perlu menyusun soal satu per satu. Cukup dua kebiasaan kecil saat mencatat.</p>
+        </div>
+        <div class="steps">
+          <div class="step reveal"><div><h3>Tulis materinya</h3><p>Ketik atau tempel catatan dari slide, buku, atau penjelasan dosen.</p></div></div>
+          <div class="step reveal"><div><h3>Tandai yang penting</h3><p>Pakai <code>**tebal**</code> untuk istilah kunci dan <code>Istilah :: Definisi</code> untuk definisi.</p></div></div>
+          <div class="step reveal"><div><h3>Latihan & ulangi</h3><p>Mulai kuis atau flashcard per materi, per mata kuliah, atau semuanya sekaligus.</p></div></div>
+        </div>
+
+        <div class="demo reveal">
+          <div class="demo-pane">
+            <div class="demo-label"><label for="demoInput">Catatanmu</label><span class="live">Coba ketik di sini</span></div>
+            <textarea id="demoInput" spellcheck="false">## Ukuran Pemusatan Data
+Nilai tengah dari data yang sudah diurutkan disebut **median**.
+
+- Mean :: Rata-rata hitung seluruh data
+- Modus :: Nilai yang paling sering muncul
+- Jangkauan :: Selisih nilai terbesar dan terkecil</textarea>
+          </div>
+          <div class="demo-pane" aria-live="polite">
+            <div class="demo-label"><span>Soal yang terbentuk otomatis</span></div>
+            <div class="qcards" id="demoOut"></div>
+            <div class="demo-count" id="demoCount"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Showcase -->
+    <section>
+      <div class="wrap">
+        <div class="row2 reveal">
+          <div>
+            <div class="kicker">Baca ulang</div>
+            <h2>Materi yang enak dibaca lagi, kapan saja</h2>
+            <p>Catatan ditampilkan rapi lengkap dengan subjudul, daftar definisi, stabilo, dan kutipan, sehingga mengulang materi semester lalu terasa ringan.</p>
+            <ul class="bullets">
+              <li><svg><use href="#i-check-circle"/></svg><span>Definisi tampil sebagai tabel yang mudah dipindai</span></li>
+              <li><svg><use href="#i-check-circle"/></svg><span>Cari kata di semua catatan dalam hitungan detik</span></li>
+              <li><svg><use href="#i-check-circle"/></svg><span>Pratinjau langsung saat kamu menulis</span></li>
+            </ul>
+          </div>
+          <div class="frame"><img src="assets/catatan.jpg" width="2560" height="1600" alt="Halaman catatan Normalisasi Database dengan daftar definisi bentuk normal" loading="lazy"></div>
+        </div>
+
+        <div class="row2 flip reveal">
+          <div>
+            <div class="kicker">Latihan soal</div>
+            <h2>Langsung tahu benar atau salah, beserta alasannya</h2>
+            <p>Setiap jawaban dinilai seketika. Untuk soal isian, salah ketik kecil tetap dianggap benar, jadi yang diuji pemahamanmu, bukan ejaanmu.</p>
+            <ul class="bullets">
+              <li><svg><use href="#i-check-circle"/></svg><span>Pembahasan muncul setelah menjawab</span></li>
+              <li><svg><use href="#i-check-circle"/></svg><span>Bisa dikerjakan pakai keyboard: tekan 1–4, lalu Enter</span></li>
+              <li><svg><use href="#i-check-circle"/></svg><span>Daftar jawaban yang salah dan tautan ke materinya di akhir kuis</span></li>
+            </ul>
+          </div>
+          <div class="frame"><img src="assets/kuis.jpg" width="2560" height="1600" alt="Soal pilihan ganda tentang 1NF dengan jawaban benar yang disorot hijau" loading="lazy"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Leitner -->
+    <section class="alt">
+      <div class="wrap row2">
+        <div class="reveal">
+          <div class="kicker">Belajar lebih cerdas</div>
+          <h2>Ulangi yang penting, lewati yang sudah hafal</h2>
+          <p>Catatan Kuliah memakai sistem kotak Leitner. Setiap soal yang kamu jawab benar naik satu kotak. Kalau salah, soal itu kembali ke kotak pertama dan akan muncul lagi lebih dulu di kuis berikutnya.</p>
+          <p>Hasilnya, waktu belajarmu habis untuk materi yang memang belum kamu kuasai.</p>
+        </div>
+        <div class="reveal" role="img" aria-label="Ilustrasi lima kotak Leitner: kotak 1 berisi soal yang paling sering diulang, kotak 5 berisi soal yang sudah dikuasai">
+          <div class="boxes">
+            <div class="box"><div class="n">Kotak 1</div><div class="cards"><i style="--a:95%"></i><i style="--a:95%"></i><i style="--a:95%"></i><i style="--a:95%"></i><i style="--a:95%"></i></div><div class="f">Baru / sering salah</div></div>
+            <div class="box"><div class="n">Kotak 2</div><div class="cards"><i style="--a:75%"></i><i style="--a:75%"></i><i style="--a:75%"></i><i style="--a:75%"></i></div><div class="f">Mulai ingat</div></div>
+            <div class="box"><div class="n">Kotak 3</div><div class="cards"><i style="--a:55%"></i><i style="--a:55%"></i><i style="--a:55%"></i></div><div class="f">Cukup paham</div></div>
+            <div class="box"><div class="n">Kotak 4</div><div class="cards"><i style="--a:38%"></i><i style="--a:38%"></i></div><div class="f">Hampir hafal</div></div>
+            <div class="box"><div class="n">Kotak 5</div><div class="cards"><i style="--a:24%"></i></div><div class="f">Dikuasai</div></div>
+          </div>
+          <div class="legend"><span>← Paling sering muncul</span><span>Jarang muncul →</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Privacy -->
+    <section id="privasi">
+      <div class="wrap">
+        <div class="section-head reveal">
+          <div class="kicker">Privasi</div>
+          <h2>Catatanmu tetap milikmu</h2>
+          <p>Tidak ada server yang menyimpan catatanmu. Semuanya tinggal di browser perangkatmu sendiri.</p>
+        </div>
+        <div class="privacy">
+          <article class="feature reveal">
+            <div class="icon"><svg><use href="#i-user"/></svg></div>
+            <h3>Tanpa akun, tanpa email</h3>
+            <p>Buka dan langsung pakai. Tidak ada formulir pendaftaran atau kata sandi yang perlu diingat.</p>
+          </article>
+          <article class="feature reveal">
+            <div class="icon"><svg><use href="#i-shield"/></svg></div>
+            <h3>Tersimpan di perangkatmu</h3>
+            <p>Catatan, soal, dan skor disimpan di browser. Tidak dikirim ke mana pun dan tidak bisa dilihat orang lain.</p>
+          </article>
+          <article class="feature reveal">
+            <div class="icon"><svg><use href="#i-download"/></svg></div>
+            <h3>Backup satu klik</h3>
+            <p>Ekspor semua data ke satu file, lalu impor di laptop atau HP lain kapan pun kamu mau pindah.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section id="faq" class="alt">
+      <div class="wrap">
+        <div class="section-head reveal">
+          <div class="kicker">FAQ</div>
+          <h2>Pertanyaan yang sering ditanyakan</h2>
+        </div>
+        <div class="faq reveal">
+          <details>
+            <summary>Apakah benar-benar gratis?</summary>
+            <p>Ya. Tidak ada biaya, langganan, atau iklan. Aplikasinya berupa situs statis yang bisa langsung dibuka di browser.</p>
+          </details>
+          <details>
+            <summary>Di mana catatanku disimpan?</summary>
+            <p>Di penyimpanan browser (localStorage) pada perangkat yang kamu pakai. Karena itu, kalau kamu menghapus data situs atau riwayat browser, catatan ikut terhapus. Biasakan mengekspor backup secara rutin lewat menu <b>Backup &amp; Pengaturan</b>.</p>
+          </details>
+          <details>
+            <summary>Bisakah aku memakainya di HP dan laptop sekaligus?</summary>
+            <p>Bisa. Tampilannya menyesuaikan layar HP. Untuk memindahkan catatan, ekspor backup di satu perangkat lalu impor di perangkat lain. Saat impor, kamu bisa memilih menggabungkan atau mengganti data yang ada.</p>
+          </details>
+          <details>
+            <summary>Bagaimana soal kuis dibuat?</summary>
+            <p>Ada dua cara. Pertama, otomatis: kata yang kamu tebalkan dengan <code>**dua bintang**</code> jadi soal isian, dan baris <code>Istilah :: Definisi</code> jadi soal pilihan ganda dan soal tebak istilah. Kedua, manual: tambahkan soal pilihan ganda, benar/salah, atau isian sendiri di halaman ubah catatan.</p>
+          </details>
+          <details>
+            <summary>Kalau jawaban isianku salah ketik sedikit, apakah dianggap salah?</summary>
+            <p>Tidak. Salah ketik kecil (satu sampai dua huruf, tergantung panjang jawaban) tetap diterima. Kamu juga bisa menulis beberapa jawaban alternatif yang dipisah tanda <code>|</code>, misalnya <code>primary key|kunci primer</code>.</p>
+          </details>
+          <details>
+            <summary>Perlu koneksi internet?</summary>
+            <p>Perlu untuk membuka halamannya. Setelah terbuka, menulis catatan dan mengerjakan kuis berjalan langsung di browsermu tanpa mengirim data ke server.</p>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <!-- Final CTA -->
+    <section class="final">
+      <div class="wrap">
+        <div class="final-card reveal">
+          <h2>Mulai kumpulkan materi kuliahmu hari ini</h2>
+          <p>Semakin awal kamu mencatat, semakin ringan belajar menjelang ujian. Buka aplikasinya, buat mata kuliah pertamamu, dan coba kuis dari catatan contoh.</p>
+          <a class="btn btn-primary" href="app.html">Buka Catatan Kuliah <svg><use href="#i-arrow"/></svg></a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      <a class="logo" href="#top"><span class="logo-mark"><svg><use href="#i-book"/></svg></span> Catatan Kuliah</a>
+      <nav aria-label="Tautan bawah">
+        <a href="app.html">Aplikasi</a>
+        <a href="#fitur">Fitur</a>
+        <a href="#faq">FAQ</a>
+        <a href="https://github.com/jordanajk/catatan-kuliah" rel="noopener">GitHub</a>
+      </nav>
+      <span>© <span id="year">2026</span> Catatan Kuliah</span>
+    </div>
+  </footer>
+
+  <script>
+    document.body.classList.remove('no-js');
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // Navbar border on scroll
+    const nav = document.getElementById('nav');
+    const onScroll = () => nav.classList.toggle('scrolled', scrollY > 8);
+    addEventListener('scroll', onScroll, { passive: true }); onScroll();
+
+    // Reveal on scroll
+    const io = 'IntersectionObserver' in window ? new IntersectionObserver((entries) => {
+      entries.forEach((e) => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
+    }, { rootMargin: '0px 0px -8% 0px' }) : null;
+    document.querySelectorAll('.reveal').forEach((el) => io ? io.observe(el) : el.classList.add('in'));
+
+    // Live demo: same rules as the app
+    const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    const strip = (s) => s.replace(/\*\*|==|`/g, '').replace(/^\s*(?:[-*]|\d+[.)]|#{1,3}|>)\s+/, '').trim();
+    const DEF = /^\s*(?:[-*]\s+)?(.+?)\s+::\s+(.+)$/;
+    const input = document.getElementById('demoInput');
+    const out = document.getElementById('demoOut');
+    const count = document.getElementById('demoCount');
+
+    function build() {
+      const defs = [], cloze = [];
+      for (const line of input.value.split('\n')) {
+        if (!line.trim() || /^>/.test(line)) continue;
+        const m = line.match(DEF);
+        if (m) { defs.push({ term: strip(m[1]), def: strip(m[2]) }); continue; }
+        for (const s of line.split(/(?<=[.!?])\s+/)) {
+          for (const t of s.matchAll(/\*\*([^*]+)\*\*/g)) cloze.push({ sentence: s, term: t[1] });
+        }
+      }
+      const cards = [];
+      for (const c of cloze) {
+        const parts = strip(c.sentence.replace(`**${c.term}**`, '\u0000')).split('\u0000');
+        cards.push(`<div class="qcard"><div class="type">Isian</div>
+          <div class="q">${parts.map(esc).join('<span class="blank"></span>')}</div>
+          <div class="ans">Jawaban: ${esc(c.term)}</div></div>`);
+      }
+      defs.forEach((d, i) => {
+        const others = defs.filter((x) => x !== d).map((x) => x.def).slice(0, 2);
+        if (others.length) {
+          const opts = [d.def, ...others].sort((a, b) => ((a.length * 7 + i) % 5) - ((b.length * 7 + i) % 5));
+          cards.push(`<div class="qcard"><div class="type">Pilihan ganda</div>
+            <div class="q">Apa yang dimaksud dengan "${esc(d.term)}"?</div>
+            <div class="opts">${opts.map((o) => `<div class="opt ${o === d.def ? 'right' : ''}">${esc(o)}</div>`).join('')}</div></div>`);
+        }
+        cards.push(`<div class="qcard"><div class="type">Isian istilah</div>
+          <div class="q">Istilah apa yang dimaksud: "${esc(d.def)}"?</div>
+          <div class="ans">Jawaban: ${esc(d.term)}</div></div>`);
+      });
+      const total = cards.length;
+      out.innerHTML = total ? cards.slice(0, 4).join('') :
+        '<div class="qcard"><div class="q">Belum ada soal.</div><div class="ans" style="color:var(--muted);font-weight:500">Tebalkan sebuah kata dengan **dua bintang** atau tulis baris "Istilah :: Definisi".</div></div>';
+      count.textContent = total > 4 ? `+${total - 4} soal lainnya · total ${total} soal dari catatan ini` : total ? `Total ${total} soal dari catatan ini` : '';
+    }
+    let t;
+    input.addEventListener('input', () => { clearTimeout(t); t = setTimeout(build, 180); });
+    build();
+  </script>
 </body>
 </html>

@@ -18,14 +18,18 @@ Website pribadi untuk menyimpan semua materi kuliah, membacanya ulang kapan saja
 
 ## Cara pakai
 
-Tidak perlu instalasi. Cukup buka `index.html` di browser, atau host sebagai situs statis (GitHub Pages, Vercel, Netlify).
+**Online:** https://jordanajk.github.io/catatan-kuliah/ (landing page) → tombol **Buka aplikasi** (`app.html`).
+
+Tidak perlu instalasi. Bisa juga dibuka langsung dari file `index.html` / `app.html` di browser.
 
 > ⚠️ Data tersimpan di browser (localStorage). Ekspor backup secara rutin lewat menu **Backup & Pengaturan**.
 
 ## Struktur
 
 ```
-index.html   kerangka halaman
-styles.css   tampilan
+index.html   landing page
+app.html     aplikasi
+styles.css   tampilan aplikasi
+assets/      screenshot untuk landing page
 app.js       semua logika (data, markdown, pembuatan soal, kuis)
 ```
