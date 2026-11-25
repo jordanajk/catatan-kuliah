@@ -16,11 +16,25 @@ const hash = (s) => { let h = 5381; for (let i = 0; i < s.length; i++) h = ((h <
 /* ---------- Data ---------- */
 function emptyDb() { return { version: 1, courses: [], notes: [], questions: [], stats: {}, attempts: [] }; }
 
-function seed() {
-  const c = { id: uid(), name: 'Contoh: Basis Data', semester: 'Semester 3', color: COLORS[0], createdAt: Date.now() };
-  const n = {
-    id: uid(), courseId: c.id, title: 'Normalisasi Database', createdAt: Date.now(), updatedAt: Date.now(),
-    content: `Normalisasi adalah proses mengorganisasi tabel untuk mengurangi **redundansi** data dan mencegah anomali.
+/* Mata kuliah yang diambil. Ditambahkan otomatis sekali ke data di browser (lihat ensureMyCourses). */
+const MY_COURSES = [
+  { code: 'FOOD6003', name: 'Global Food and Nutrition Science Capstone Project A', units: 12, semester: '2026 Semester 1', color: '#b5523b' },
+  { code: 'FOOD6004', name: 'Global Food and Nutrition Science Capstone Project B', units: 12, semester: '2026 Semester 2', color: '#b5523b' },
+  { code: 'PROJX500', name: 'Project Management Fundamentals', units: 6, semester: '2026 Semester 2', color: '#2f8f9d' },
+  { code: 'MARK5005', name: 'Consumer Behaviour and Insights', units: 6, semester: '2026 Semester 2', color: '#8a5cb8' },
+  { code: 'FOOD6007', name: 'Innovations in Food Proc', units: 6, semester: 'Kredit eksternal', credit: 'external', color: '#2f6f5e' },
+  { code: 'ECON5015', name: 'Global Food and Ag Mkt', units: 6, semester: 'Kredit eksternal', credit: 'external', color: '#c08a1e' },
+  { code: 'FOOD5006', name: 'Sensory and Flavour Science', units: 6, semester: 'Kredit eksternal', credit: 'external', color: '#2f6f5e' },
+  { code: 'FOOD5007', name: 'Advance in Food and Nutrition', units: 6, semester: 'Kredit eksternal', credit: 'external', color: '#2f6f5e' },
+  { code: 'FOODX300', name: 'Food Prod Future Climate', units: 6, semester: 'Kredit eksternal', credit: 'external', color: '#2f6f5e' },
+  { code: 'ENGPX415', name: 'Food Processing and Safety', units: 6, semester: 'Kredit eksternal', credit: 'external', color: '#3b6fb6' },
+  { code: 'FOOD5009', name: 'Nutrition Metabolism', units: 6, semester: 'Kredit eksternal', credit: 'external', color: '#2f6f5e' },
+  { code: 'ECON6013', name: 'Globalisation Agric Emerg Eco1', units: 6, semester: 'Kredit eksternal', credit: 'external', color: '#c08a1e' },
+];
+const MY_COURSES_VERSION = 1;
+
+/* Isi catatan contoh versi lama — dipakai untuk mengenali contoh yang belum pernah diubah. */
+const SAMPLE_CONTENT = `Normalisasi adalah proses mengorganisasi tabel untuk mengurangi **redundansi** data dan mencegah anomali.
 
 ## Bentuk Normal
 - 1NF :: Setiap kolom berisi nilai atomik dan tidak ada grup berulang
@@ -32,25 +46,37 @@ function seed() {
 Kolom yang secara unik mengidentifikasi setiap baris disebut **primary key**.
 Kolom yang merujuk ke primary key tabel lain disebut **foreign key**.
 
-> Ini catatan contoh. Tulis kata dengan dua bintang (tebal) untuk membuat soal isian otomatis, dan tulis "Istilah :: Definisi" untuk soal pilihan ganda otomatis. Hapus mata kuliah contoh ini kapan saja.`,
-  };
-  const d = emptyDb();
-  d.courses.push(c);
-  d.notes.push(n);
-  d.questions.push({
-    id: uid(), noteId: n.id, type: 'tf', prompt: 'Tabel yang memenuhi 3NF pasti juga memenuhi 2NF.',
-    answer: 'true', options: [], explanation: '3NF mensyaratkan tabel sudah memenuhi 2NF.',
-  });
+> Ini catatan contoh. Tulis kata dengan dua bintang (tebal) untuk membuat soal isian otomatis, dan tulis "Istilah :: Definisi" untuk soal pilihan ganda otomatis. Hapus mata kuliah contoh ini kapan saja.`;
+
+function ensureMyCourses(d) {
+  if ((d.myCoursesVersion || 0) >= MY_COURSES_VERSION) return d;
+  // Buang mata kuliah contoh hanya jika masih persis seperti bawaan (belum dipakai).
+  const sample = d.courses.find((c) => c.name === 'Contoh: Basis Data');
+  if (sample) {
+    const ns = d.notes.filter((n) => n.courseId === sample.id);
+    if (ns.every((n) => n.content === SAMPLE_CONTENT)) {
+      const ids = new Set(ns.map((n) => n.id));
+      d.notes = d.notes.filter((n) => !ids.has(n.id));
+      d.questions = d.questions.filter((q) => !ids.has(q.noteId));
+      d.courses = d.courses.filter((c) => c !== sample);
+    }
+  }
+  for (const m of MY_COURSES) {
+    if (!d.courses.some((c) => c.code === m.code)) d.courses.push({ id: 'mk-' + m.code.toLowerCase(), ...m, createdAt: Date.now() });
+  }
+  d.myCoursesVersion = MY_COURSES_VERSION;
   return d;
 }
 
 function load() {
+  let d = emptyDb();
   try {
     const raw = localStorage.getItem(KEY);
-    if (raw) return Object.assign(emptyDb(), JSON.parse(raw));
+    if (raw) d = Object.assign(emptyDb(), JSON.parse(raw));
   } catch (e) { /* storage unavailable */ }
-  return seed();
+  return ensureMyCourses(d);
 }
+const totalUnits = (courses) => courses.reduce((s, c) => s + (+c.units || 0), 0);
 let db = load();
 let storageOk = true;
 

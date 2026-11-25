@@ -4,7 +4,7 @@ Ruang belajar pribadi untuk menyimpan semua materi kuliah, membacanya ulang kapa
 
 ## Fitur
 
-- **Mata kuliah per semester**: kelompokkan catatan berdasarkan mata kuliah dan semester.
+- **Mata kuliah per semester** lengkap dengan kode, jumlah unit, dan penanda kredit eksternal. Daftar mata kuliah 2026 (12 mata kuliah, 84 unit) sudah terpasang otomatis lewat `MY_COURSES` di `core.js`.
 - **Catatan materi** dengan format sederhana (judul, poin, tebal, stabilo, kode, kutipan) dan pratinjau langsung.
 - **Kuis otomatis dari catatan**:
   - `**kata penting**` → soal isian (kata itu dikosongkan)

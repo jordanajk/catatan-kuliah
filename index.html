@@ -133,6 +133,9 @@
     .course::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 5px; background: var(--c); }
     .course:hover { border-color: var(--c); transform: translateY(-2px); }
     .course .nm { font-weight: 700; line-height: 1.3; }
+    .course .code { font: 600 .74rem/1 ui-monospace, "SF Mono", Menlo, Consolas, monospace; color: var(--c); letter-spacing: .02em; margin-bottom: 7px; }
+    .semester-title .units { margin-left: auto; order: 2; font-weight: 600; letter-spacing: .04em; }
+    .semester-title::after { order: 1; }
     .course .meta { display: flex; gap: 6px 12px; flex-wrap: wrap; font-size: .84rem; color: var(--muted); margin-top: 8px; }
     .pill { display: inline-block; padding: 1px 8px; border-radius: 99px; font-size: .75rem; font-weight: 600; background: var(--bad-soft); color: var(--bad); }
     .course.add { display: grid; place-items: center; text-align: center; border-style: dashed; color: var(--muted); font-weight: 600; min-height: 92px; }
@@ -333,7 +336,7 @@ Nilai tengah dari data yang sudah diurutkan disebut **median**.
       const att = db.attempts.slice(-30);
       const avg = att.length ? Math.round(att.reduce((s, a) => s + (a.score / a.total) * 100, 0) / att.length) + '%' : '–';
       $('#stats').innerHTML = [
-        [db.courses.length, 'mata kuliah'], [db.notes.length, 'catatan materi'], [allQ.length, 'soal kuis'], [avg, 'rata-rata skor'],
+        [db.courses.length, `mata kuliah · ${totalUnits(db.courses)} unit`], [db.notes.length, 'catatan materi'], [allQ.length, 'soal kuis'], [avg, 'rata-rata skor'],
       ].map(([v, l]) => `<div><b>${v}</b><span>${l}</span></div>`).join('');
     }
 
@@ -345,12 +348,13 @@ Nilai tengah dari data yang sudah diurutkan disebut **median**.
         $('#shelf').innerHTML = `<div class="empty">Rak masih kosong.<br><br><a class="btn btn-primary" href="app.html#/matkul/baru">+ Tambah mata kuliah</a></div>`;
         return;
       }
-      $('#shelf').innerHTML = keys.map((k, i) => `<div class="semester"><div class="semester-title">${esc(k)}</div><div class="courses">
+      $('#shelf').innerHTML = keys.map((k, i) => `<div class="semester"><div class="semester-title"><span>${esc(k)}</span><span class="units">${totalUnits(groups[k])} unit</span></div><div class="courses">
         ${groups[k].sort((a, b) => a.name.localeCompare(b.name, 'id')).map((c) => {
           const ns = notesOf(c.id);
           const qs = questionsFor(ns.map((n) => n.id));
           const w = qs.filter((q) => weakSet.has(q.id)).length;
           return `<a class="course" style="--c:${esc(c.color)}" href="app.html#/matkul/${c.id}">
+            ${c.code ? `<div class="code">${esc(c.code)}${c.units ? ` · ${+c.units} unit` : ''}</div>` : ''}
             <div class="nm">${esc(c.name)}</div>
             <div class="meta"><span>${ns.length} catatan</span><span>${qs.length} soal</span>${w ? `<span class="pill">${w} perlu diulang</span>` : ''}</div></a>`;
         }).join('')}
@@ -360,6 +364,7 @@ Nilai tengah dari data yang sudah diurutkan disebut **median**.
 
     function renderAll() {
       db = load();
+      save(); // simpan hasil penambahan otomatis mata kuliah supaya id-nya sama dengan di aplikasi
       const allQ = questionsFor(db.notes.map((n) => n.id));
       const weak = allQ.filter((q) => isWeak(q.id));
       renderGreeting();
