@@ -1,6 +1,6 @@
 # 📚 Catatan Kuliah
 
-Website pribadi untuk menyimpan semua materi kuliah, membacanya ulang kapan saja, dan mengubahnya menjadi kuis atau flashcard.
+Ruang belajar pribadi untuk menyimpan semua materi kuliah, membacanya ulang kapan saja, dan mengubahnya menjadi kuis atau flashcard.
 
 ## Fitur
 
@@ -14,11 +14,13 @@ Website pribadi untuk menyimpan semua materi kuliah, membacanya ulang kapan saja
 - **Beranda**: statistik, materi yang perlu diulang, dan riwayat skor.
 - **Pencarian** di semua catatan.
 - **Backup**: ekspor/impor file `.json` untuk pindah perangkat.
+- **Halaman depan pribadi**: sapaan dengan nama panggilan, lanjutkan materi terakhir, soal yang perlu diulang, pengingat backup, dan rak mata kuliah per semester.
 - Tampilan terang/gelap dan bisa dipakai di HP.
+- Tidak diindeks mesin pencari (`noindex`).
 
 ## Cara pakai
 
-**Online:** https://jordanajk.github.io/catatan-kuliah/ (landing page) → tombol **Buka aplikasi** (`app.html`).
+**Online:** https://jordanajk.github.io/catatan-kuliah/ (halaman depan pribadi) → tombol **Buka catatan** (`app.html`).
 
 Tidak perlu instalasi. Bisa juga dibuka langsung dari file `index.html` / `app.html` di browser.
 
@@ -27,9 +29,9 @@ Tidak perlu instalasi. Bisa juga dibuka langsung dari file `index.html` / `app.h
 ## Struktur
 
 ```
-index.html   landing page
-app.html     aplikasi
+index.html   halaman depan: sapaan, ringkasan belajar, rak mata kuliah, contekan
+app.html     aplikasi catatan & kuis
+core.js      inti data: penyimpanan, markdown, pembuatan soal (dipakai kedua halaman)
+app.js       antarmuka aplikasi
 styles.css   tampilan aplikasi
-assets/      screenshot untuk landing page
-app.js       semua logika (data, markdown, pembuatan soal, kuis)
 ```
