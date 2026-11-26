@@ -31,6 +31,7 @@ Tidak perlu instalasi. Bisa juga dibuka langsung dari file `index.html` / `app.h
 ```
 index.html   halaman depan: sapaan, ringkasan belajar, rak mata kuliah, contekan
 app.html     aplikasi catatan & kuis
+materi.js    catatan materi yang dikirim lewat repo (ditambahkan sekali ke browser)
 core.js      inti data: penyimpanan, markdown, pembuatan soal (dipakai kedua halaman)
 app.js       antarmuka aplikasi
 styles.css   tampilan aplikasi

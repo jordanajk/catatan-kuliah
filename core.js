@@ -74,7 +74,24 @@ function load() {
     const raw = localStorage.getItem(KEY);
     if (raw) d = Object.assign(emptyDb(), JSON.parse(raw));
   } catch (e) { /* storage unavailable */ }
-  return ensureMyCourses(d);
+  return ensureMyNotes(ensureMyCourses(d));
+}
+
+/* Tambahkan catatan dari materi.js sekali saja; yang sudah pernah ditambahkan tidak diulang walau dihapus. */
+function ensureMyNotes(d) {
+  if (typeof MY_NOTES === 'undefined') return d;
+  d.myNotesApplied = Array.isArray(d.myNotesApplied) ? d.myNotesApplied : [];
+  for (const m of MY_NOTES) {
+    if (d.myNotesApplied.includes(m.id)) continue;
+    const now = Date.now();
+    if (!d.courses.some((c) => c.id === m.course.id)) d.courses.push({ ...m.course, createdAt: now });
+    if (!d.notes.some((n) => n.id === m.id)) d.notes.push({ id: m.id, courseId: m.course.id, title: m.title, content: m.content, createdAt: now, updatedAt: now });
+    for (const q of m.questions || []) {
+      if (!d.questions.some((x) => x.id === q.id)) d.questions.push({ options: [], explanation: '', ...q, noteId: m.id });
+    }
+    d.myNotesApplied.push(m.id);
+  }
+  return d;
 }
 const totalUnits = (courses) => courses.reduce((s, c) => s + (+c.units || 0), 0);
 let db = load();
