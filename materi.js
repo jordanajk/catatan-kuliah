@@ -128,4 +128,49 @@ Proyeknya adalah aplikasi **pelacak kalori** yang dibuat tanpa menulis satu bari
       { id: 'q-claude-02-f', type: 'mc', prompt: 'Apa urutan fokus Modul 2 sampai 5?', options: ['Cowork → Chat → Excel → PowerPoint', 'Chat → Cowork → PowerPoint → Excel', 'Cowork → Excel → Chat → PowerPoint', 'Claude Code → Chat → Excel → PowerPoint'], answer: 'Cowork → Chat → Excel → PowerPoint', explanation: '' },
     ],
   },
+  {
+    id: 'catatan-claude-03',
+    course: { id: 'mk-claude-ai', code: '', name: 'Claude Masterclass (AI)', semester: 'Belajar mandiri', color: '#b83b7a' },
+    title: 'Analogi cepat (ramah ADHD): Claude & AI agent',
+    content: `Versi singkat dan visual dari dua catatan sebelumnya. Satu istilah, satu gambaran.
+
+> Cara pakai: baca satu bagian saja (paling lama 3 menit), lalu langsung buka Flashcard 5 soal. Selesai, istirahat, ulangi bagian berikutnya.
+
+## Empat produk Claude
+- Claude Chat :: Teman pintar di WhatsApp: kamu tanya, dia jawab, tapi dia tidak bisa menyentuh barang-barangmu
+- Claude Cowork :: Asisten yang kamu beri kunci meja belajarmu: dia buka map, baca PDF, dan bikin file Excel langsung di situ
+- Claude Code :: Mandor bersama tim tukangnya: kamu cukup bilang mau rumah seperti apa, mereka yang memasang bata (kodenya)
+- Claude in Chrome :: Kurir ojol yang kamu suruh belanja: dia yang jalan ke toko online, kamu tinggal terima hasilnya
+
+## Cara kerja agen
+- AI agent :: Sopir yang menyetir sampai tujuan, sedangkan chatbot biasa cuma Google Maps yang memberi rute
+- Subtask :: Resep nasi goreng: tugas besar dipecah jadi iris bawang, panaskan minyak, masukkan nasi
+- Screenshot :: Main game sambil melihat layar: bertindak, lihat hasilnya, lalu koreksi langkah berikutnya
+- Prompt :: Pesanan di warung: makin detail (pedas level 3, telur setengah matang, tanpa acar), makin pas hasilnya
+- Skills :: Aplikasi di HP: agen memasang kemampuan baca PDF atau bikin Excel sesuai kebutuhan
+- API :: Pelayan restoran: aplikasi memesan lewat pelayan, dapur (program lain) memasak, pelayan membawa hasilnya kembali
+
+Trik **subtask** juga ampuh untuk otak ADHD: kalau tugas terasa terlalu besar, pecah sampai langkah pertamanya terasa gampang.
+
+## Alat-alat lanjutan
+- Plugin :: Starter pack: satu paket berisi beberapa skills dan perintah untuk satu bidang, misalnya finance
+- MCP :: Colokan USB universal: satu bentuk colokan supaya Claude bisa tersambung ke banyak alat
+- Slash command :: Tombol speed dial: satu ketukan untuk menjalankan alur kerja yang sudah disimpan
+- Plan mode :: Menggambar denah dulu sebelum membangun rumah
+- Normal mode :: Tukang yang selalu bertanya "boleh saya bongkar tembok ini?" sebelum bertindak
+- Auto-accept :: Menitipkan kunci rumah ke tukang lalu kamu pergi ngopi
+- Sub-agent :: Anggota kelompok yang diberi bagian khusus oleh ketua kelompok
+- Multi-agent :: Panitia acara kampus: divisi acara, konsumsi, dan humas bekerja bareng untuk satu acara
+
+## Dua hal yang wajib diingat
+Akurasi 90–95% itu seperti **GPS**: sangat membantu, tapi kamu tetap harus melihat jalan.
+Memberi kartu kredit ke agen sekarang ibarat memberi **PIN ATM** ke anak magang di minggu pertamanya.
+- Analisis sensitivitas :: Menggeser slider di game: kalau harga naik 10%, untungnya jadi berapa?
+- Brand voice :: Gaya chat-mu ke teman berbeda dengan gaya chat-mu ke dosen`,
+    questions: [
+      { id: 'q-claude-03-a', type: 'mc', prompt: 'Chatbot biasa itu seperti Google Maps yang memberi rute. Kalau AI agent seperti apa?', options: ['Sopir yang menyetir sampai tujuan', 'Peta kertas', 'Rambu lalu lintas', 'Polisi yang mengatur jalan'], answer: 'Sopir yang menyetir sampai tujuan', explanation: 'Agen tidak hanya memberi tahu caranya, tetapi ikut mengerjakan sampai selesai.' },
+      { id: 'q-claude-03-b', type: 'mc', prompt: 'Mode Claude Code mana yang seperti "menitipkan kunci rumah ke tukang lalu pergi ngopi"?', options: ['Auto-accept', 'Plan mode', 'Normal mode', 'Slash command'], answer: 'Auto-accept', explanation: 'Perubahan langsung diterapkan tanpa minta persetujuan di setiap langkah.' },
+      { id: 'q-claude-03-c', type: 'tf', prompt: 'MCP bisa dibayangkan seperti colokan USB universal untuk menyambungkan Claude ke banyak alat.', answer: 'true', explanation: '' },
+    ],
+  },
 ];

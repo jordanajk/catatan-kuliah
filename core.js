@@ -81,16 +81,16 @@ function load() {
 function ensureMyNotes(d) {
   if (typeof MY_NOTES === 'undefined') return d;
   d.myNotesApplied = Array.isArray(d.myNotesApplied) ? d.myNotesApplied : [];
-  for (const m of MY_NOTES) {
-    if (d.myNotesApplied.includes(m.id)) continue;
-    const now = Date.now();
+  MY_NOTES.forEach((m, i) => {
+    if (d.myNotesApplied.includes(m.id)) return;
+    const now = Date.now() + i; // urutan pembuatan mengikuti urutan di materi.js
     if (!d.courses.some((c) => c.id === m.course.id)) d.courses.push({ ...m.course, createdAt: now });
     if (!d.notes.some((n) => n.id === m.id)) d.notes.push({ id: m.id, courseId: m.course.id, title: m.title, content: m.content, createdAt: now, updatedAt: now });
     for (const q of m.questions || []) {
       if (!d.questions.some((x) => x.id === q.id)) d.questions.push({ options: [], explanation: '', ...q, noteId: m.id });
     }
     d.myNotesApplied.push(m.id);
-  }
+  });
   return d;
 }
 const totalUnits = (courses) => courses.reduce((s, c) => s + (+c.units || 0), 0);
