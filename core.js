@@ -104,7 +104,8 @@ function save() {
 
 const course = (id) => db.courses.find((c) => c.id === id);
 const note = (id) => db.notes.find((n) => n.id === id);
-const notesOf = (courseId) => db.notes.filter((n) => n.courseId === courseId).sort((a, b) => a.title.localeCompare(b.title, 'id'));
+// Urut sesuai waktu dibuat (urutan pertemuan), lalu judul
+const notesOf = (courseId) => db.notes.filter((n) => n.courseId === courseId).sort((a, b) => (a.createdAt || 0) - (b.createdAt || 0) || a.title.localeCompare(b.title, 'id', { numeric: true }));
 
 /* ---------- Markdown (ringan) ---------- */
 function inline(s) {
